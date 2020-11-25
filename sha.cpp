@@ -86,10 +86,10 @@ ZZ big_sig1(ZZ &x)
   return retVal;
 }
 
-ZZ sha256(string x)
+string sha256(string x)
 {
   // holds values for the compression stage of sha256
-  vector<ZZ> registers;
+  vector<long> registers;
 
   // hold the blocks containing the digest
   vector<ZZ> blocks;
@@ -97,14 +97,14 @@ ZZ sha256(string x)
   makeBlocks(blocks, x);
 
   // fractional parts of the first 8 prime numbers as starting registers
-  registers.push_back(Z(1779033703));
-  registers.push_back(Z(3144134277));
-  registers.push_back(Z(1013904242));
-  registers.push_back(Z(2773480762));
-  registers.push_back(Z(1359893119));
-  registers.push_back(Z(2600822924));
-  registers.push_back(Z(4823701931));
-  registers.push_back(Z(5836426521));
+  registers.push_back(1779033703);
+  registers.push_back(3144134277);
+  registers.push_back(1013904242);
+  registers.push_back(2773480762);
+  registers.push_back(1359893119);
+  registers.push_back(2600822924);
+  registers.push_back(4823701931);
+  registers.push_back(5836426521);
 
   while (!blocks.empty())
   {
@@ -122,7 +122,7 @@ ZZ sha256(string x)
     registers.pop_back();
   }
 
-  return retVal;
+  return toHex(retVal);
 }
 
 void makeBlocks(vector<ZZ> &blocks, string &x)
@@ -138,12 +138,29 @@ void makeBlocks(vector<ZZ> &blocks, string &x)
   for (int i = 0; i < ((numBits + padding) / 512); i++)
   {
     ZZ temp = digest;
-    blocks.push_back(trunc_ZZ(temp,512));
+    blocks.push_back(trunc_ZZ(temp, 512));
     digest >>= 512;
   }
 }
 
-void processBlock(vector<ZZ> &registers, ZZ &block)
+void processBlock(vector<long> &registers, ZZ &block)
 {
+}
 
+string toHex(ZZ &T)
+{
+  char digits[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+  string retVal = "";
+  long iter = NumBits(T) / 4;
+
+  for (int i = 0; i < iter; i++)
+  {
+    retVal = digits[T % 16] + retVal;
+    T >>= 4;
+  }
+
+  if (T > 0)
+    retVal = digits[T % 16] + retVal;
+
+  return retVal;
 }

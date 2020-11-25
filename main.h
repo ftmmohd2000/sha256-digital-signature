@@ -42,10 +42,11 @@ ZZ big_sig0(ZZ &x);
 void big_sig1(ZZ &ans, ZZ &x);
 ZZ big_sig1(ZZ &x);
 
-ZZ sha256(string &s);
-ZZ sha256(char x[]);
+string sha256(string &s);
 
 void makeBlocks(vector<ZZ> &blocks,string &x);
-void processBlock(vector<ZZ> &registers, ZZ &block);
+void processBlock(vector<long> &registers, ZZ &block);
+
+string toHex(ZZ &T);
 
 #endif
