@@ -21,10 +21,6 @@ long shr(long &val, int n)
   return val >> n;
 }
 
-void choice(long &ans, long &c, long &x, long &y)
-{
-}
-
 long choice(long &c, long &x, long &y)
 {
   long neg = 0xFFFFFFFF ^ c;
@@ -51,23 +47,6 @@ long big_sig1(long &x)
 {
   return rotr(x, 6) ^ rotr(x, 11) ^ rotr(x, 25);
 }
-
-string toBin(long x)
-{
-  return toBin(Z(x));
-}
-
-string toBin(ZZ x)
-{
-  string retVal = "";
-  for (int i = 0; i < 32; i++)
-  {
-    retVal += IsOdd(x) ? '1' : '0';
-    x >>= 1;
-  }
-  return retVal;
-}
-
 string toHex(long x)
 {
   return toHex(Z(x));
