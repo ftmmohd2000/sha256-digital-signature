@@ -37,6 +37,27 @@ void initSchedule(long *schedule, ZZ &block);
 void makeBlocks(vector<ZZ> &blocks,string &x);
 void processBlock(vector<long> &registers, ZZ &block);
 
+string toBin(long x);
+string toBin(ZZ x);
+string toHex(long T);
+string toHex(ZZ T);
+
+#endif
+
+#ifndef UTILS_H
+#define UTILS_H
+
+long maj(long &a, long &b, long &c);
+long rotr(long &val, int n);
+long shr(long &val, int n);
+long choice(long &c, long &x, long &y);
+long small_sig0(long &x);
+long small_sig1(long &x);
+long big_sig0(long &x);
+long big_sig1(long &x);
+
+string toBin(long x);
+string toBin(ZZ x);
 string toHex(long T);
 string toHex(ZZ T);
 
