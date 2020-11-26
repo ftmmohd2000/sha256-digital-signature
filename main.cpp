@@ -3,17 +3,17 @@
 
 int main()
 {
-  using namespace std::chrono;
+  // using namespace std::chrono;
 
-  high_resolution_clock::time_point t1 = high_resolution_clock::now();
+  // high_resolution_clock::time_point t1 = high_resolution_clock::now();
 
-  string input = "helloworld";
+  string input = "abc";
 
   cout << sha256(input) << endl;
 
-  high_resolution_clock::time_point t2 = high_resolution_clock::now();
+  // high_resolution_clock::time_point t2 = high_resolution_clock::now();
 
-  duration<double, std::milli> time_span = t2 - t1;
+  // duration<double, std::milli> time_span = t2 - t1;
 
-  cout << "It took me " << time_span.count() << " milliseconds." << endl;
+  // cout << "It took me " << time_span.count() << " milliseconds." << endl;
 }

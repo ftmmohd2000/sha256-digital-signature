@@ -1,5 +1,16 @@
 #include "main.h"
 
+long maj(long &a, long &b, long &c)
+{
+  unsigned long ret = a;
+  if (b > ret)
+    ret = b;
+  if (c > ret)
+    ret = c;
+
+  return ret;
+}
+
 long rotr(long &val, int n)
 {
   return (trunc_long(Z(val), n) << (32 - n)) | (val >> n);
@@ -166,10 +177,28 @@ void makeBlocks(vector<ZZ> &blocks, string &x)
   }
 }
 
-void processBlock(vector<long> &registers, ZZ &block)
+void processBlock(vector<long> &reg, ZZ &block)
 {
   long schedule[64];
   initSchedule(schedule, block);
+
+  long initState[8];
+  copy(reg.begin(), reg.end(), initState);
+
+  for (int i = 0; i < 64; i++)
+  {
+    long W = schedule[i];
+    long K = makeConstant(i);
+    long T1 = trunc_long(Z(big_sig1(reg[4]) + choice(reg[4], reg[5], reg[6]) + reg[7] + K + W), 32);
+    long T2 = trunc_long(Z(big_sig0(reg[0]) + maj(reg[0], reg[1], reg[2])), 32);
+
+    reg.pop_back();
+    reg.insert(reg.begin(), trunc_long(Z(T1 + T2), 32));
+    reg[4] = trunc_long(Z(reg[4] + T1), 32);
+  }
+
+  for (int i = 0; i < 8; i++)
+    reg[i] = trunc_long(Z(reg[i] + initState[i]), 32);
 }
 
 void initSchedule(long *schedule, ZZ &block)

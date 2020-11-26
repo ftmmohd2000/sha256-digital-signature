@@ -21,6 +21,7 @@ void genKeys(ZZ &e, ZZ &d, ZZ &totient, ZZ &p, ZZ &q);
 #ifndef SHA_H
 #define SHA_H
 
+long maj(long &a, long &b, long &c);
 long rotr(long &val, int n);
 long shr(long &val, int n);
 long choice(long &c, long &x, long &y);
