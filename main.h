@@ -8,18 +8,12 @@
 
 NTL_CLIENT
 
-#ifndef RSA_H
-#define RSA_H
+#ifndef PROJECT_H
+#define PROJECT_H
 
-void encrypt(ZZ &ct, ZZ &pt, ZZ &e, ZZ &n);
-void decrypt(ZZ &pt, ZZ &ct, ZZ &d, ZZ &n);
-void genPair(ZZ &p, ZZ &q, long numBits = 400);
-void genKeys(ZZ &e, ZZ &d, ZZ &totient, ZZ &p, ZZ &q);
-
-#endif
-
-#ifndef SHA_H
-#define SHA_H
+void sign(ZZ &ct, ZZ &pt, ZZ &priv, ZZ &n);
+bool verify(string &message, ZZ &signature, ZZ &pub, ZZ &n);
+void genKeys(ZZ &e, ZZ &d, ZZ &N, long numBits = 400);
 
 long maj(long &a, long &b, long &c);
 long rotr(long &val, int n);
@@ -39,26 +33,7 @@ void processBlock(vector<long> &registers, ZZ &block);
 
 string toBin(long x);
 string toBin(ZZ x);
-string toHex(long T);
-string toHex(ZZ T);
-
-#endif
-
-#ifndef UTILS_H
-#define UTILS_H
-
-long maj(long &a, long &b, long &c);
-long rotr(long &val, int n);
-long shr(long &val, int n);
-long choice(long &c, long &x, long &y);
-long small_sig0(long &x);
-long small_sig1(long &x);
-long big_sig0(long &x);
-long big_sig1(long &x);
-
-string toBin(long x);
-string toBin(ZZ x);
-string toHex(long T);
-string toHex(ZZ T);
-
+string toHex(long x);
+string toHex(ZZ x);
+ZZ ZZFromHex(string x);
 #endif

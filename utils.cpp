@@ -89,3 +89,65 @@ string toHex(ZZ x)
 
   return retVal;
 }
+
+ZZ ZZFromHex(string x)
+{
+  ZZ retVal;
+  for (const char c : x)
+  {
+    retVal <<= 4;
+    switch (c)
+    {
+    case '0':
+      retVal |= 0;
+      break;
+    case '1':
+      retVal |= 1;
+      break;
+    case '2':
+      retVal |= 2;
+      break;
+    case '3':
+      retVal |= 3;
+      break;
+    case '4':
+      retVal |= 4;
+      break;
+    case '5':
+      retVal |= 5;
+      break;
+    case '6':
+      retVal |= 6;
+      break;
+    case '7':
+      retVal |= 7;
+      break;
+    case '8':
+      retVal |= 8;
+      break;
+    case '9':
+      retVal |= 9;
+      break;
+    case 'a':
+      retVal |= 10;
+      break;
+    case 'b':
+      retVal |= 11;
+      break;
+    case 'c':
+      retVal |= 12;
+      break;
+    case 'd':
+      retVal |= 13;
+      break;
+    case 'e':
+      retVal |= 14;
+      break;
+    case 'f':
+      retVal |= 15;
+      break;
+    }
+  }
+
+  return retVal;
+}

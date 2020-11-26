@@ -1,24 +1,25 @@
 #include "main.h"
 
-inline void encrypt(ZZ &ct, ZZ &pt, ZZ &e, ZZ &n)
+void sign(ZZ &ct, ZZ &pt, ZZ &priv, ZZ &n)
 {
-  PowerMod(ct, pt, e, n);
+  PowerMod(ct, pt, priv, n);
 }
 
-inline void decrypt(ZZ &pt, ZZ &ct, ZZ &d, ZZ &n)
+bool verify(string &message, ZZ &signature, ZZ &pub, ZZ &n)
 {
-  PowerMod(pt, ct, d, n);
+  string hashedMsg = sha256(message);
+  ZZ hash = ZZFromHex(hashedMsg);
+  ZZ plaintext;
+  PowerMod(plaintext, signature, pub, n);
+  return (plaintext == hash);
 }
 
-void genPair(ZZ &p, ZZ &q, long numBits)
+void genKeys(ZZ &e, ZZ &d, ZZ &N, long primeBitLength)
 {
-  GenPrime(p, numBits);
-  GenPrime(q, numBits);
-}
-
-void genKeys(ZZ &e, ZZ &d, ZZ &totient, ZZ &p, ZZ &q)
-{
+  ZZ p, q;
+  GenPrime(p, primeBitLength);
+  GenPrime(q, primeBitLength);
   e = 65537;
-  totient = (p - 1) * (q - 1);
-  InvMod(d,e,totient);
+  N = p * q;
+  InvMod(d, e, (p - 1) * (q - 1));
 }
