@@ -21,32 +21,21 @@ void genKeys(ZZ &e, ZZ &d, ZZ &totient, ZZ &p, ZZ &q);
 #ifndef SHA_H
 #define SHA_H
 
-void rotr(ZZ &ans, ZZ &val, int n);
-ZZ rotr(ZZ &val, int n);
-
-void shr(ZZ &ans, ZZ &val, int n);
-ZZ shr(ZZ &val, int n);
-
-void choice(ZZ &ans, ZZ &c, ZZ &x, ZZ &y);
-ZZ choice(ZZ &c, ZZ &x, ZZ &y);
-
-void small_sig0(ZZ &ans, ZZ &x);
-ZZ small_sig0(ZZ &x);
-
-void small_sig1(ZZ &ans, ZZ &x);
-ZZ small_sig1(ZZ &x);
-
-void big_sig0(ZZ &ans, ZZ &x);
-ZZ big_sig0(ZZ &x);
-
-void big_sig1(ZZ &ans, ZZ &x);
-ZZ big_sig1(ZZ &x);
+long rotr(long &val, int n);
+long shr(long &val, int n);
+long choice(long &c, long &x, long &y);
+long small_sig0(long &x);
+long small_sig1(long &x);
+long big_sig0(long &x);
+long big_sig1(long &x);
 
 string sha256(string &s);
 
+void initSchedule(long *schedule, ZZ &block);
 void makeBlocks(vector<ZZ> &blocks,string &x);
 void processBlock(vector<long> &registers, ZZ &block);
 
-string toHex(ZZ &T);
+string toHex(long T);
+string toHex(ZZ T);
 
 #endif

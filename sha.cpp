@@ -1,100 +1,56 @@
 #include "main.h"
 
-inline void rotr(ZZ &ans, ZZ &val, int n)
+long rotr(long &val, int n)
 {
-  ans = LeftShift(trunc_ZZ(val, n), 32 - n) | RightShift(val, n);
+  return (trunc_long(Z(val), n) << (32 - n)) | (val >> n);
 }
 
-ZZ rotr(ZZ &val, int n)
+long shr(long &val, int n)
 {
-  ZZ retVal;
-  rotr(retVal, val, n);
-  return retVal;
+  return val >> n;
 }
 
-inline void shr(ZZ &ans, ZZ &val, int n)
+void choice(long &ans, long &c, long &x, long &y)
 {
-  ans = val >> n;
 }
 
-ZZ shr(ZZ &val, int n)
+long choice(long &c, long &x, long &y)
 {
-  ZZ retVal;
-  shr(retVal, val, n);
-  return retVal;
+  long neg = 0xFFFFFFFF ^ c;
+
+  return (c & x) | (neg & y);
 }
 
-void choice(ZZ &ans, ZZ &c, ZZ &x, ZZ &y)
+long small_sig0(long &x)
 {
-  ZZ neg = 0xFFFFFFFF ^ c;
-
-  ans = (c & x) | (neg & y);
+  return rotr(x, 7) ^ rotr(x, 18) ^ shr(x, 3);
 }
 
-ZZ choice(ZZ &c, ZZ &x, ZZ &y)
+long small_sig1(long &x)
 {
-  ZZ retVal;
-  choice(retVal, c, x, y);
-  return retVal;
+  return rotr(x, 17) ^ rotr(x, 19) ^ shr(x, 10);
 }
 
-inline void small_sig0(ZZ &ans, ZZ &x)
+long big_sig0(long &x)
 {
-  ans = rotr(x, 7) ^ rotr(x, 18) ^ shr(x, 3);
+  return rotr(x, 2) ^ rotr(x, 13) ^ rotr(x, 22);
 }
 
-ZZ small_sig0(ZZ &x)
+long big_sig1(long &x)
 {
-  ZZ retVal;
-  small_sig0(retVal, x);
-  return retVal;
+  return rotr(x, 6) ^ rotr(x, 11) ^ rotr(x, 25);
 }
 
-inline void small_sig1(ZZ &ans, ZZ &x)
+string sha256(string &x)
 {
-  ans = rotr(x, 17) ^ rotr(x, 19) ^ shr(x, 10);
-}
-
-ZZ small_sig1(ZZ &x)
-{
-  ZZ retVal;
-  small_sig1(retVal, x);
-  return retVal;
-}
-
-void big_sig0(ZZ &ans, ZZ &x)
-{
-  ans = rotr(x, 2) ^ rotr(x, 13) ^ rotr(x, 22);
-}
-
-ZZ big_sig0(ZZ &x)
-{
-  ZZ retVal;
-  big_sig0(retVal, x);
-  return retVal;
-}
-
-void big_sig1(ZZ &ans, ZZ &x)
-{
-  ans = rotr(x, 6) ^ rotr(x, 11) ^ rotr(x, 25);
-}
-
-ZZ big_sig1(ZZ &x)
-{
-  ZZ retVal;
-  big_sig1(retVal, x);
-  return retVal;
-}
-
-string sha256(string x)
-{
-  // holds values for the compression stage of sha256
-  vector<long> registers;
-
-  // hold the blocks containing the digest
+  // holds the padded blocks
   vector<ZZ> blocks;
 
+  // convert text to blocks
   makeBlocks(blocks, x);
+
+  // holds values for the compression stage of sha256
+  vector<long> registers;
 
   // fractional parts of the first 8 prime numbers as starting registers
   registers.push_back(1779033703);
@@ -103,23 +59,19 @@ string sha256(string x)
   registers.push_back(2773480762);
   registers.push_back(1359893119);
   registers.push_back(2600822924);
-  registers.push_back(4823701931);
-  registers.push_back(5836426521);
+  registers.push_back(528734635);
+  registers.push_back(1541459225);
 
-  while (!blocks.empty())
-  {
-    processBlock(registers, blocks[0]);
-    blocks.pop_back();
-  }
+  for (int i = 0; i < blocks.size(); i++)
+    processBlock(registers, blocks[i]);
 
   // final concatenated value to be returned
   ZZ retVal;
 
-  while (!registers.empty())
+  for (int i = 0; i < 8; i++)
   {
     retVal <<= 32;
-    retVal = retVal + registers[0];
-    registers.pop_back();
+    retVal += registers[i];
   }
 
   return toHex(retVal);
@@ -137,30 +89,53 @@ void makeBlocks(vector<ZZ> &blocks, string &x)
 
   for (int i = 0; i < ((numBits + padding) / 512); i++)
   {
-    ZZ temp = digest;
-    blocks.push_back(trunc_ZZ(temp, 512));
+    blocks.push_back(trunc_ZZ(digest, 512));
     digest >>= 512;
   }
 }
 
 void processBlock(vector<long> &registers, ZZ &block)
 {
+  long schedule[64];
+  initSchedule(schedule, block);
 }
 
-string toHex(ZZ &T)
+void initSchedule(long *schedule, ZZ &block)
+{
+  for (int i = 15; i >= 0; i--)
+  {
+    schedule[i] = trunc_long(block, 32);
+    block >>= 32;
+  }
+
+  int idx = 16;
+
+  while (idx < 64)
+  {
+    schedule[idx] = (small_sig1(schedule[idx - 2]) + schedule[idx - 1] + small_sig0(schedule[idx - 15]) + schedule[idx - 16]) % power_long(2, 32);
+    idx++;
+  }
+}
+
+string toHex(long x)
+{
+  return toHex(Z(x));
+}
+
+string toHex(ZZ x)
 {
   char digits[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
   string retVal = "";
-  long iter = NumBits(T) / 4;
+  long iter = NumBits(x) / 4;
 
   for (int i = 0; i < iter; i++)
   {
-    retVal = digits[T % 16] + retVal;
-    T >>= 4;
+    retVal = digits[x % 16] + retVal;
+    x >>= 4;
   }
 
-  if (T > 0)
-    retVal = digits[T % 16] + retVal;
+  if (x > 0)
+    retVal = digits[x % 16] + retVal;
 
   return retVal;
 }
