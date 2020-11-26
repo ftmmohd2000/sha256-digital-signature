@@ -31,6 +31,7 @@ long big_sig1(long &x);
 
 string sha256(string &s);
 
+long makeConstant(int n);
 void initSchedule(long *schedule, ZZ &block);
 void makeBlocks(vector<ZZ> &blocks,string &x);
 void processBlock(vector<long> &registers, ZZ &block);

@@ -45,22 +45,14 @@ string sha256(string &x)
 {
   // holds the padded blocks
   vector<ZZ> blocks;
-
-  // convert text to blocks
   makeBlocks(blocks, x);
 
   // holds values for the compression stage of sha256
-  vector<long> registers;
+  vector<long> registers(8);
 
-  // fractional parts of the first 8 prime numbers as starting registers
-  registers.push_back(1779033703);
-  registers.push_back(3144134277);
-  registers.push_back(1013904242);
-  registers.push_back(2773480762);
-  registers.push_back(1359893119);
-  registers.push_back(2600822924);
-  registers.push_back(528734635);
-  registers.push_back(1541459225);
+  // initialize registers with first 8 constants
+  for (int i = 0; i < 8; i++)
+    registers[i] = makeConstant(i);
 
   for (int i = 0; i < blocks.size(); i++)
     processBlock(registers, blocks[i]);
@@ -77,19 +69,99 @@ string sha256(string &x)
   return toHex(retVal);
 }
 
+long makeConstant(int n)
+{
+  static unsigned short primes[] = {2,
+                                    3,
+                                    5,
+                                    7,
+                                    11,
+                                    13,
+                                    17,
+                                    19,
+                                    23,
+                                    29,
+                                    31,
+                                    37,
+                                    41,
+                                    43,
+                                    47,
+                                    53,
+                                    59,
+                                    61,
+                                    67,
+                                    71,
+                                    73,
+                                    79,
+                                    83,
+                                    89,
+                                    97,
+                                    101,
+                                    103,
+                                    107,
+                                    109,
+                                    113,
+                                    127,
+                                    131,
+                                    137,
+                                    139,
+                                    149,
+                                    151,
+                                    157,
+                                    163,
+                                    167,
+                                    173,
+                                    179,
+                                    181,
+                                    191,
+                                    193,
+                                    197,
+                                    199,
+                                    211,
+                                    223,
+                                    227,
+                                    229,
+                                    233,
+                                    239,
+                                    241,
+                                    251,
+                                    257,
+                                    263,
+                                    269,
+                                    271,
+                                    277,
+                                    281,
+                                    283,
+                                    293,
+                                    307,
+                                    311};
+
+  return (long)(power_long(2, 32) * (sqrtl(primes[n]) - (int)sqrt(primes[n])));
+}
+
 void makeBlocks(vector<ZZ> &blocks, string &x)
 {
   ZZ digest;
   ZZFromBytes(digest, (unsigned char *)x.c_str(), x.length());
+  digest <<= 1;
+  digest += 1;
 
+  // the length of current digest and required padding is calculated
   long numBits = NumBits(digest);
   long padding = (512 * ceil(numBits / 512.0)) - numBits;
+
+  // digest is padded to a multiple of 512
   digest <<= padding;
+
+  // length of message is appended at the end of the block
   digest |= trunc_ZZ(Z(x.length() * 8), padding);
 
-  for (int i = 0; i < ((numBits + padding) / 512); i++)
+  // break up the digest into blocks
+  int len = (numBits + padding) / 512;
+  blocks.resize(len);
+  for (int i = len - 1; i >= 0; i--)
   {
-    blocks.push_back(trunc_ZZ(digest, 512));
+    blocks[i] = trunc_ZZ(digest, 512);
     digest >>= 512;
   }
 }
